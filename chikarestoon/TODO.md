@@ -1,5 +1,12 @@
-[*] Add stars, Comments
-[*] Readonly users, Write and read users, Admins with perms
-[*] Randomly select an ideaه
-[*] Users Should have : names, emails (Should be approved), Captchas,Bios, And they should be able to upload images, therefore the content can be null only if there is a picture.
-[*] Ideas should have categories
+[*] Starredposts model
+[*] Comment
+[*] View to randomly select ideas
+[*] Clean urls
+[*] Fix profiles, don't allow delete, and... just fix it !.
+[*] Also fix star urls.
+[*] Fix perms.
+[*] Add an ability to de-star.
+[*] Check if you can use serialiser's validators.
+[] Fix star serialiser returning wrong value.
+[] Categories
+[] Ability to upload Images
