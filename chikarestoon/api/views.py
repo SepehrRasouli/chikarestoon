@@ -1,13 +1,10 @@
 import random
-from django.shortcuts import render,get_object_or_404
-from django.contrib.auth.models import User
-from django.http.response import Http404
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets,status
 from rest_framework.response import Response
-from rest_framework.decorators import action
 from .models import Idea,Star,StarredIdeas,Profile,Comment
 from .permissions import IsUserChangingTheirOwnProfile,IsTheUserDoingActionsOnTheirOwnProfile
-from .serializers import IdeaSerialiser,StarSerialiser,ProfileSerialiser,UserSerialiser,CommentSerialiser
+from .serializers import IdeaSerialiser,StarSerialiser,ProfileSerialiser,CommentSerialiser
 # Create your views here.
 
 class IdeaViewSet(viewsets.ModelViewSet):
@@ -19,7 +16,6 @@ class RandomIdeaViewSet(viewsets.ViewSet):
     queryset = Idea.objects.all()
     serializer_class = IdeaSerialiser
     def get(self,request):
-        import ipdb;ipdb.set_trace()
         queryset = random.choice(Idea.objects.all())
         serializer_class = IdeaSerialiser(queryset)
         return Response(serializer_class.data)
@@ -31,15 +27,15 @@ class StarViewSet(viewsets.ViewSet):
     serializer_class = StarSerialiser
 
     @staticmethod
-    def de_star(request,pk,idea_object):
-        import ipdb;ipdb.set_trace()
+    def de_star(request,idea_object):
         star_obj = Star.objects.get(
-            related_idea=pk
+            related_idea=idea_object
         )
         star_obj.stars -= 1
         star_obj.save()
         StarredIdeas.objects.get(
-            user=request.user.profile
+            user=request.user.profile,
+            related_idea=idea_object
         ).delete()
 
     def get(self,request,pk=None) -> Response:
@@ -74,11 +70,9 @@ class StarViewSet(viewsets.ViewSet):
                 'idea_object':idea_object,
             }
         )
-        import ipdb;ipdb.set_trace()
         if serializer.is_valid(raise_exception=True):
-            import ipdb;ipdb.set_trace()
             if serializer.validated_data.get('de_star'):
-                self.de_star(request,pk,idea_object)
+                self.de_star(request,idea_object)
                 return Response({'status':'decreamented by one.'})
             #FIXME: Serializer returns old values, fix it
             star_obj = Star(
