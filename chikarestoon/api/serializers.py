@@ -16,7 +16,6 @@ class StarSerialiser(serializers.ModelSerializer):
     def check_double_star_and_de_star(data,pk,idea_object,current_stars,profile):
         de_star = False
         try:
-            import ipdb;ipdb.set_trace()
             if data['stars'] - current_stars == -1 and \
             get_object_or_404(
                 StarredIdeas,
@@ -36,7 +35,6 @@ class StarSerialiser(serializers.ModelSerializer):
 
 
     def validate(self,data):
-        import ipdb;ipdb.set_trace()
         current_stars = self.instance.stars
         idea_object = self.context.get('idea_object')
         profile = self.context.get("request").user.profile

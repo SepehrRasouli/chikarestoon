@@ -73,7 +73,7 @@ class StarViewSet(viewsets.ViewSet):
         if serializer.is_valid(raise_exception=True):
             if serializer.validated_data.get('de_star'):
                 self.de_star(request,idea_object)
-                return Response({'status':'decreamented by one.'})
+                return Response(serializer.data)
             #FIXME: Serializer returns old values, fix it
             star_obj = Star(
                 id=pk,
