@@ -12,21 +12,11 @@ class StarSerialiser(serializers.ModelSerializer):
         model = Star
         fields = "__all__"
 
-    def validate(self,data):
-        current_stars = self.instance.stars
-        idea_object = self.context.get('idea_object')
-        profile = self.context.get("request").user.profile
-        pk = self.context.get("pk")
+    @staticmethod
+    def check_double_star_and_de_star(data,pk,idea_object,current_stars,profile):
         de_star = False
-        if not 'stars' in data.keys():
-            raise serializers.ValidationError('You can only change stars field')
-        if profile is None:
-            raise serializers.ValidationError('User is not authenticated.',code=401)
-        if data['stars'] - current_stars > 1:
-            raise serializers.ValidationError('You can\'t increament stars more than one.')
-        if data['stars'] - current_stars < -1:
-            raise serializers.ValidationError('You can\'t decreament stars more than one.')
         try:
+            import ipdb;ipdb.set_trace()
             if data['stars'] - current_stars == -1 and \
             get_object_or_404(
                 StarredIdeas,
@@ -42,9 +32,32 @@ class StarSerialiser(serializers.ModelSerializer):
             ).related_idea_id == pk:
                 raise serializers.ValidationError('You can\'t star more than once.')
         except Http404:
-            pass
-        else:
             return {'data':data,'de_star':de_star}
+
+
+    def validate(self,data):
+        import ipdb;ipdb.set_trace()
+        current_stars = self.instance.stars
+        idea_object = self.context.get('idea_object')
+        profile = self.context.get("request").user.profile
+        pk = self.context.get("pk")
+        de_star = False
+        if not 'stars' in data.keys():
+            raise serializers.ValidationError('You can only change stars field')
+        if profile is None:
+            raise serializers.ValidationError('User is not authenticated.',code=401)
+        if data['stars'] - current_stars > 1:
+            raise serializers.ValidationError('You can\'t increament stars more than one.')
+        if data['stars'] - current_stars < -1:
+            raise serializers.ValidationError('You can\'t decreament stars more than one.')
+        double_star_and_de_star_check = self.check_double_star_and_de_star(
+            data,
+            pk,
+            idea_object,
+            current_stars,
+            profile
+        )
+        return double_star_and_de_star_check
 
 class ProfileSerialiser(serializers.ModelSerializer):
     class Meta:
